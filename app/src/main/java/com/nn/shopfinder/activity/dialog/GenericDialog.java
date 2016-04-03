@@ -29,10 +29,34 @@ public class GenericDialog extends DialogFragment {
     private GenericDialogCallback callback;
 
 
-    public static void newInstance(String msg, String btn1, String btn2){
-        
+    public static GenericDialog newInstance(String msg){
+        GenericDialog d = new GenericDialog();
+        Bundle args = new Bundle();
+        args.putString("msg", msg);
+        d.setArguments(args);
+        return d;
+    }
 
+    public static GenericDialog newInstance(String msg, String btn1, String btn2){
+        GenericDialog d = new GenericDialog();
+        Bundle args = new Bundle();
+        args.putString("msg", msg);
+        args.putString("btn1", btn1);
+        args.putString("btn2", btn2);
+        d.setArguments(args);
+        return d;
+    }
 
+    public static GenericDialog newInstance(String msg, String btn1, String btn2,Boolean closeOnAction, Boolean closeOnOutsideAction){
+        GenericDialog d = new GenericDialog();
+        Bundle args = new Bundle();
+        args.putString("msg", msg);
+        args.putString("btn1", btn1);
+        args.putString("btn2", btn2);
+        args.putBoolean("closeOnAction",closeOnAction);
+        args.putBoolean("closeOnOutsideAction",closeOnOutsideAction);
+        d.setArguments(args);
+        return d;
     }
 
     @Override
@@ -46,6 +70,11 @@ public class GenericDialog extends DialogFragment {
             closeOnAction = savedInstanceState.getBoolean("closeOnAction");
             closeOnOutsideAction = savedInstanceState.getBoolean("closeOnOutsideAction");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         getDialog().setCanceledOnTouchOutside(closeOnOutsideAction != null ? closeOnOutsideAction : false);
         onDismiss(new DialogInterface() {
@@ -59,6 +88,7 @@ public class GenericDialog extends DialogFragment {
                 callback.onDismiss();
             }
         });
+
     }
 
     @Nullable
@@ -66,6 +96,8 @@ public class GenericDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.dialog_generic,container);
+
+        getDialog().setTitle("Alerta");
 
         btn1 = (Button)view.findViewById(R.id.btn1);
         btn2 = (Button)view.findViewById(R.id.btn2);
