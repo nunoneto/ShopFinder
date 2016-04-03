@@ -1,8 +1,7 @@
-package com.nn.shopfinder.activity;
+package com.nn.shopfinder.views.activity;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -22,7 +21,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
-import com.nn.shopfinder.activity.dialog.GenericDialog;
+import com.nn.shopfinder.services.response.Rest;
+import com.nn.shopfinder.services.response.VodafoneResponse;
+import com.nn.shopfinder.views.dialog.GenericDialog;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity
 
     //Callbacks
     private final static int CALLBACK_REQUEST_LOCATION_PERMISSION = 1;
+    private final static int CALLBACK_REQUEST_INTERNET_PERMISSION = 2;
 
 
     @Override
@@ -46,8 +52,22 @@ public class MainActivity extends AppCompatActivity
         initNavDrawer();
 
         validateLocationStatus();
+        validateInternetAccess();
+
+        Rest.getInstance().getService().listRepos(new Callback<VodafoneResponse>() {
+            @Override
+            public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
+                System.out.println("ok");
+            }
+
+            @Override
+            public void onFailure(Call<VodafoneResponse> call, Throwable t) {
+                System.out.println("not ok");
+            }
+        });
 
     }
+
 
     private void initNavDrawer() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -126,11 +146,21 @@ public class MainActivity extends AppCompatActivity
         if(!status){
             GenericDialog
                     .newInstance(getResources().getString(R.string.activate_gps))
-                    .show(getFragmentManager().beginTransaction(), "DIAG");
+                    .show(getFragmentManager(), "DIAG");
         }
 
         return false;
     }
+
+    private boolean validateInternetAccess() {
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET},CALLBACK_REQUEST_INTERNET_PERMISSION);
+            return false;
+        }
+        return true;
+    }
+
 
     private void centerMap(){
         LocationManager locMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -148,7 +178,13 @@ public class MainActivity extends AppCompatActivity
                     validateLocationStatus();
                 else
                     //TODO: add dialog to ask user if sure about exiting app
-                return;
+                break;
+            case CALLBACK_REQUEST_INTERNET_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    validateInternetAccess();
+                else
+                    //TODO: add dialog to ask user if sure about exiting app
+                break;
             default:
 
                 break;
