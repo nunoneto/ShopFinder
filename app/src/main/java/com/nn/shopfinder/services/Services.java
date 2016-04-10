@@ -13,8 +13,7 @@ import retrofit2.http.Path;
 public interface Services {
 
     //Vodafone
-
     @GET("https://selfcareonline.vodafone.pt/lojasvdf/api")
-    Call<VodafoneResponse> listRepos(Callback<VodafoneResponse> callback);
+    Call<VodafoneResponse> listRepos();
 
 }

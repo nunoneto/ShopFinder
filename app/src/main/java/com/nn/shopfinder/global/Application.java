@@ -1,5 +1,7 @@
 package com.nn.shopfinder.global;
 
+import com.facebook.stetho.Stetho;
+import com.nn.shopfinder.services.Services;
 import com.nn.shopfinder.services.response.Rest;
 
 /**
@@ -13,6 +15,9 @@ public class Application extends android.app.Application {
 
         //init dependencies
         new Rest(getApplicationContext());
+
+        //dev dependencies
+        Stetho.initializeWithDefaults(this);
 
     }
 }

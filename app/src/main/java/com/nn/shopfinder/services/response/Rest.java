@@ -2,8 +2,12 @@ package com.nn.shopfinder.services.response;
 
 import android.content.Context;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nn.shopfinder.services.Services;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -26,9 +30,17 @@ public class Rest {
 
     private void initRetrofit() {
 
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .create();
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+//        okHttpClient.networkInterceptors().add(new StethoInterceptor());
+
         retrofit = new Retrofit.Builder()
+                .client(okHttpClient)
                 .baseUrl("https://selfcareonline.vodafone.pt/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         service = retrofit.create(Services.class);

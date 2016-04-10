@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +32,8 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+
+    private final static String TAG = "MAIN_ACTIVITY";
 
     private Toolbar toolbar;
     private GoogleMap map;
@@ -54,15 +57,15 @@ public class MainActivity extends AppCompatActivity
         validateLocationStatus();
         validateInternetAccess();
 
-        Rest.getInstance().getService().listRepos(new Callback<VodafoneResponse>() {
+        Rest.getInstance().getService().listRepos().enqueue(new Callback<VodafoneResponse>() {
             @Override
             public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
-                System.out.println("ok");
+                Log.d(TAG,"OK");
             }
 
             @Override
             public void onFailure(Call<VodafoneResponse> call, Throwable t) {
-                System.out.println("not ok");
+                Log.d(TAG,"NOT OK");
             }
         });
 
