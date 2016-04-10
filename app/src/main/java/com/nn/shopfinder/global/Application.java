@@ -1,8 +1,8 @@
 package com.nn.shopfinder.global;
 
 import com.facebook.stetho.Stetho;
-import com.nn.shopfinder.services.Services;
-import com.nn.shopfinder.services.response.Rest;
+import com.nn.shopfinder.model.DataModel;
+import com.nn.shopfinder.services.Rest;
 
 /**
  * Created by Nuno on 03/04/2016.
@@ -15,6 +15,7 @@ public class Application extends android.app.Application {
 
         //init dependencies
         new Rest(getApplicationContext());
+        new DataModel();
 
         //dev dependencies
         Stetho.initializeWithDefaults(this);

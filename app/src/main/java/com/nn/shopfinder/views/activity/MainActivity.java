@@ -22,10 +22,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
-import com.nn.shopfinder.services.response.Rest;
+import com.nn.shopfinder.services.Rest;
 import com.nn.shopfinder.services.response.VodafoneResponse;
 import com.nn.shopfinder.views.dialog.GenericDialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import java8.util.stream.StreamSupport;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,12 +64,23 @@ public class MainActivity extends AppCompatActivity
         Rest.getInstance().getService().listRepos().enqueue(new Callback<VodafoneResponse>() {
             @Override
             public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
-                Log.d(TAG,"OK");
+
+                VodafoneResponse resp = response.body();
+                if(resp != null){
+
+                    List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
+                    StreamSupport.stream(shops)
+                            .forEach(System.out::println);
+
+                }else{
+                    //TODO: deal with it
+                }
+
             }
 
             @Override
-            public void onFailure(Call<VodafoneResponse> call, Throwable t) {
-                Log.d(TAG,"NOT OK");
+            public  void onFailure(Call<VodafoneResponse> call, Throwable t) {
+                Log.d(TAG,t.getMessage());
             }
         });
 

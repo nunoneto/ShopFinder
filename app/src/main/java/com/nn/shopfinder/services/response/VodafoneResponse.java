@@ -1,16 +1,21 @@
 package com.nn.shopfinder.services.response;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Nuno on 03/04/2016.
  */
 public class VodafoneResponse implements Serializable{
 
-    public List<VodafoneShop> shops;
+    @SerializedName("result")
+    public Map<String,VodafoneShop> shops;
 
-    public List<VodafoneShop> getShops() {
+    public Map<String,VodafoneShop> getShops() {
         return shops;
     }
 
