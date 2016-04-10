@@ -22,6 +22,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
+import com.nn.shopfinder.model.DataModel;
+import com.nn.shopfinder.model.shop.GenericShop;
+import com.nn.shopfinder.model.shop.VodafoneShop;
 import com.nn.shopfinder.services.Rest;
 import com.nn.shopfinder.services.response.VodafoneResponse;
 import com.nn.shopfinder.views.dialog.GenericDialog;
@@ -29,6 +32,7 @@ import com.nn.shopfinder.views.dialog.GenericDialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import java8.util.function.Consumer;
 import java8.util.stream.StreamSupport;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,12 +72,28 @@ public class MainActivity extends AppCompatActivity
                 VodafoneResponse resp = response.body();
                 if(resp != null){
 
-                    List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
+                    final List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
+                    final List<VodafoneShop> outputShops = new ArrayList<VodafoneShop>();
                     StreamSupport.stream(shops)
-                            .forEach(System.out::println);
-
+                            .forEach(new Consumer<VodafoneResponse.VodafoneShop>() {
+                                @Override
+                                public void accept(VodafoneResponse.VodafoneShop vodafoneShop) {
+                                    outputShops.add(
+                                            new VodafoneShop(
+                                                    vodafoneShop.getHash(),
+                                                    vodafoneShop.getName(),
+                                                    vodafoneShop.getDescription(),
+                                                    vodafoneShop.getStoreProperties().getAddress(),
+                                                    vodafoneShop.getStoreProperties().getHours(),
+                                                    vodafoneShop.getStoreProperties().getLat(),
+                                                    vodafoneShop.getStoreProperties().getLon()
+                                            ));
+                                }
+                            });
+                    DataModel.getInstance().setVodafoneShops(outputShops);
+                    buildShopMarkers();
                 }else{
-                    //TODO: deal with it
+                    //TODO: deal with it -.-'
                 }
 
             }
@@ -81,6 +101,20 @@ public class MainActivity extends AppCompatActivity
             @Override
             public  void onFailure(Call<VodafoneResponse> call, Throwable t) {
                 Log.d(TAG,t.getMessage());
+            }
+        });
+
+    }
+
+    private void buildShopMarkers() {
+
+        StreamSupport.stream(DataModel.getInstance().getAllShops()).forEach(new Consumer<GenericShop>() {
+            @Override
+            public void accept(GenericShop genericShop) {
+                map.addMarker(new MarkerOptions()
+                        .position(new LatLng(genericShop.getLatitude(), genericShop.getLongitude()))
+                        .draggable(false)
+                );
             }
         });
 
