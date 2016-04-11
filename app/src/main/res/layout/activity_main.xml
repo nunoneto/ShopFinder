@@ -32,7 +32,7 @@
             android:id="@+id/mapFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            class="com.google.android.gms.maps.SupportMapFragment"/>
+            class="com.google.android.gms.maps.MapFragment"/>
 
 
     </FrameLayout>

@@ -27,6 +27,7 @@ public class VodafoneResponse implements Serializable{
         private String title;
         private String name;
         private String description;
+        @SerializedName("store")
         private StoreProperties storeProperties;
 
         public int getId() {

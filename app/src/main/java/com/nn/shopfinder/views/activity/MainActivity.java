@@ -18,6 +18,7 @@ import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java8.util.function.Consumer;
+import java8.util.function.Predicate;
 import java8.util.stream.StreamSupport;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,6 +77,12 @@ public class MainActivity extends AppCompatActivity
                     final List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
                     final List<VodafoneShop> outputShops = new ArrayList<VodafoneShop>();
                     StreamSupport.stream(shops)
+                            .filter(new Predicate<VodafoneResponse.VodafoneShop>() {
+                                @Override
+                                public boolean test(VodafoneResponse.VodafoneShop vodafoneShop) {
+                                    return vodafoneShop != null && vodafoneShop.getStoreProperties() != null;
+                                }
+                            })
                             .forEach(new Consumer<VodafoneResponse.VodafoneShop>() {
                                 @Override
                                 public void accept(VodafoneResponse.VodafoneShop vodafoneShop) {
@@ -186,6 +194,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean validateLocationStatus(){
+
+        //change the location of this to after the validations
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(this);
+
 
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},CALLBACK_REQUEST_LOCATION_PERMISSION);
