@@ -3,6 +3,7 @@ package com.nn.shopfinder.views.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -15,12 +16,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
 import com.nn.shopfinder.model.DataModel;
@@ -29,9 +37,12 @@ import com.nn.shopfinder.model.shop.VodafoneShop;
 import com.nn.shopfinder.services.Rest;
 import com.nn.shopfinder.services.response.VodafoneResponse;
 import com.nn.shopfinder.views.dialog.GenericDialog;
+import com.nn.shopfinder.views.fragment.ShopDetailFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import java8.util.function.Consumer;
 import java8.util.function.Predicate;
@@ -41,12 +52,18 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private final static String TAG = "MAIN_ACTIVITY";
 
     private Toolbar toolbar;
     private GoogleMap map;
+    private GoogleApiClient mGoogleApiClient;
+    private Location lastKnownLocation;
+    private Map<Marker,String> mapMarkers;
+
+    //Fragments
+    private ShopDetailFragment shopDetail;
 
     //dialog
     GenericDialog diag;
@@ -61,8 +78,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initPlayServices();
+
         initToolbar();
         initNavDrawer();
+
+        //init GoogleMaps
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(this);
+
 
         validateLocationStatus();
         validateInternetAccess();
@@ -72,7 +97,7 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
 
                 VodafoneResponse resp = response.body();
-                if(resp != null){
+                if (resp != null) {
 
                     final List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
                     final List<VodafoneShop> outputShops = new ArrayList<VodafoneShop>();
@@ -100,34 +125,40 @@ public class MainActivity extends AppCompatActivity
                             });
                     DataModel.getInstance().setVodafoneShops(outputShops);
                     buildShopMarkers();
-                }else{
+                } else {
                     //TODO: deal with it -.-'
                 }
 
             }
 
             @Override
-            public  void onFailure(Call<VodafoneResponse> call, Throwable t) {
-                Log.d(TAG,t.getMessage());
+            public void onFailure(Call<VodafoneResponse> call, Throwable t) {
+                Log.d(TAG, t.getMessage());
             }
         });
 
     }
 
     private void buildShopMarkers() {
-
+        if(mapMarkers == null)
+            mapMarkers = new HashMap<>();
         StreamSupport.stream(DataModel.getInstance().getAllShops()).forEach(new Consumer<GenericShop>() {
             @Override
             public void accept(GenericShop genericShop) {
-                map.addMarker(new MarkerOptions()
-                        .position(new LatLng(genericShop.getLatitude(), genericShop.getLongitude()))
-                        .draggable(false)
+
+                mapMarkers.put(
+                        map.addMarker(new MarkerOptions()
+                                        .position(new LatLng(genericShop.getLatitude(), genericShop.getLongitude()))
+                                        .draggable(false)
+                        ),
+                        genericShop.getId()
                 );
+
+
             }
         });
 
     }
-
 
     private void initNavDrawer() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -157,25 +188,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+        //TODO map options choosen
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -186,22 +203,38 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                String shopId = mapMarkers.get(marker);
+                Toast.makeText(getApplicationContext(), shopId, Toast.LENGTH_SHORT).show();
+                showShopDetail(shopId);
+
+                return false;
+            }
+        });
+    }
+
+    private void showShopDetail(String shopId){
+
+        getFragmentManager().findFragmentById(R.id.mapFragment)
+                .getView()
+                .setVisibility(View.GONE);
+
+        getFragmentManager()
+                .beginTransaction()
+                .add(
+                    R.id.fragment_container,
+                    ShopDetailFragment.newInstance(shopId)
+                ).commit();
 
     }
 
     private boolean validateLocationStatus(){
 
-        //change the location of this to after the validations
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.mapFragment);
-        mapFragment.getMapAsync(this);
-
-
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},CALLBACK_REQUEST_LOCATION_PERMISSION);
             return false;
         }
@@ -213,25 +246,19 @@ public class MainActivity extends AppCompatActivity
             GenericDialog
                     .newInstance(getResources().getString(R.string.activate_gps))
                     .show(getFragmentManager(), "DIAG");
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     private boolean validateInternetAccess() {
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET},CALLBACK_REQUEST_INTERNET_PERMISSION);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, CALLBACK_REQUEST_INTERNET_PERMISSION);
             return false;
         }
         return true;
-    }
-
-
-    private void centerMap(){
-        LocationManager locMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        //Location loc = locMan.getLastKnownLocation(locMan.getBestProvider(new Criteria(),false));
-
     }
 
 
@@ -256,5 +283,57 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
+    }
+
+    private GoogleApiClient initPlayServices(){
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        return mGoogleApiClient;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        if (validateLocationStatus()) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Location loc = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
+                    new LatLng(loc.getLatitude(),loc.getLongitude()),
+                    10
+            )));
+        }
+    }
+
+    /**
+     * Google Play Services Callbacks
+     */
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        //TODO
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        //TODO
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initPlayServices().connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        initPlayServices().disconnect();
     }
 }
