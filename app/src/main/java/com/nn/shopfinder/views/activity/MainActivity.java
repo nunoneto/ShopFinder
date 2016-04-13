@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
         validateLocationStatus();
         validateInternetAccess();
 
-        Rest.getInstance().getService().listRepos().enqueue(new Callback<VodafoneResponse>() {
+        Rest.getInstance().getService().getVodafoneShops().enqueue(new Callback<VodafoneResponse>() {
             @Override
             public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
 
