@@ -28,6 +28,8 @@ public class DataModel {
     //Vodafone
     private List<VodafoneShop> vodafoneShops;
 
+    private Location lastKnownLocation;
+
     public List<? extends GenericShop> getAllShops() {
         return vodafoneShops;
     }
@@ -47,5 +49,13 @@ public class DataModel {
                 return vdfShop;
 
         return null;
+    }
+
+    public Location getLastKnownLocation() {
+        return lastKnownLocation;
+    }
+
+    public void setLastKnownLocation(Location lastKnownLocation) {
+        this.lastKnownLocation = lastKnownLocation;
     }
 }
