@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
+import com.nn.shopfinder.logic.ShopFactory;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.GenericShop;
 import com.nn.shopfinder.model.shop.VodafoneShop;
@@ -72,6 +73,9 @@ public class MainActivity extends AppCompatActivity
     private final static int CALLBACK_REQUEST_LOCATION_PERMISSION = 1;
     private final static int CALLBACK_REQUEST_INTERNET_PERMISSION = 2;
 
+    //Logic
+    private ShopFactory shopFac;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity
                 .findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
 
+        shopFac = ShopFactory.getInstance();
 
         validateLocationStatus();
         validateInternetAccess();
