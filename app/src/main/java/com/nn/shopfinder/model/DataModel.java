@@ -1,14 +1,13 @@
 package com.nn.shopfinder.model;
 
+import android.location.Location;
+
 import com.nn.shopfinder.model.shop.GenericShop;
+import com.nn.shopfinder.model.shop.MeoShop;
+import com.nn.shopfinder.model.shop.NosShop;
 import com.nn.shopfinder.model.shop.VodafoneShop;
-import com.nn.shopfinder.services.response.VodafoneResponse;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import java8.util.function.Consumer;
-import java8.util.stream.StreamSupport;
 
 /**
  * Created by Nuno on 10/04/2016.
@@ -25,8 +24,9 @@ public class DataModel {
         instance = this;
     }
 
-    //Vodafone
     private List<VodafoneShop> vodafoneShops;
+    private List<NosShop> nosShops;
+    private List<MeoShop> meoShops;
 
     private Location lastKnownLocation;
 
@@ -57,5 +57,21 @@ public class DataModel {
 
     public void setLastKnownLocation(Location lastKnownLocation) {
         this.lastKnownLocation = lastKnownLocation;
+    }
+
+    public List<NosShop> getNosShops() {
+        return nosShops;
+    }
+
+    public void setNosShops(List<NosShop> nosShops) {
+        this.nosShops = nosShops;
+    }
+
+    public List<MeoShop> getMeoShops() {
+        return meoShops;
+    }
+
+    public void setMeoShops(List<MeoShop> meoShops) {
+        this.meoShops = meoShops;
     }
 }

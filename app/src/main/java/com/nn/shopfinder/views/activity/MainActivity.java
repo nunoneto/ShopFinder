@@ -14,7 +14,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -31,16 +30,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
+import com.nn.shopfinder.logic.OnShopsLoadedCallback;
 import com.nn.shopfinder.logic.ShopFactory;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.GenericShop;
-import com.nn.shopfinder.model.shop.VodafoneShop;
-import com.nn.shopfinder.services.Rest;
-import com.nn.shopfinder.services.response.VodafoneResponse;
 import com.nn.shopfinder.views.dialog.GenericDialog;
 import com.nn.shopfinder.views.fragment.ShopDetailFragment;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +44,11 @@ import java.util.Map;
 import java8.util.function.Consumer;
 import java8.util.function.Predicate;
 import java8.util.stream.StreamSupport;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        implements  NavigationView.OnNavigationItemSelectedListener,
+                    OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+                    GoogleApiClient.OnConnectionFailedListener, OnShopsLoadedCallback {
 
     private final static String TAG = "MAIN_ACTIVITY";
 
@@ -92,78 +87,60 @@ public class MainActivity extends AppCompatActivity
                 .findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
 
-        shopFac = ShopFactory.getInstance();
+        shopFac = new ShopFactory(this);
 
         validateLocationStatus();
         validateInternetAccess();
 
-        Rest.getInstance().getService().getVodafoneShops().enqueue(new Callback<VodafoneResponse>() {
-            @Override
-            public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
+        shopFac.loadShops();
 
-                VodafoneResponse resp = response.body();
-                if (resp != null) {
-
-                    final List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
-                    final List<VodafoneShop> outputShops = new ArrayList<VodafoneShop>();
-                    StreamSupport.stream(shops)
-                            .filter(new Predicate<VodafoneResponse.VodafoneShop>() {
-                                @Override
-                                public boolean test(VodafoneResponse.VodafoneShop vodafoneShop) {
-                                    return vodafoneShop != null && vodafoneShop.getStoreProperties() != null;
-                                }
-                            })
-                            .forEach(new Consumer<VodafoneResponse.VodafoneShop>() {
-                                @Override
-                                public void accept(VodafoneResponse.VodafoneShop vodafoneShop) {
-                                    outputShops.add(
-                                            new VodafoneShop(
-                                                    vodafoneShop.getHash(),
-                                                    vodafoneShop.getName(),
-                                                    vodafoneShop.getDescription(),
-                                                    vodafoneShop.getStoreProperties().getAddress(),
-                                                    vodafoneShop.getStoreProperties().getHours(),
-                                                    vodafoneShop.getStoreProperties().getLat(),
-                                                    vodafoneShop.getStoreProperties().getLon()
-                                            ));
-                                }
-                            });
-                    DataModel.getInstance().setVodafoneShops(outputShops);
-                    buildShopMarkers();
-                } else {
-                    //TODO: deal with it -.-'
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<VodafoneResponse> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
-        });
-
-    }
-
-    private void buildShopMarkers() {
-        if(mapMarkers == null)
-            mapMarkers = new HashMap<>();
-        StreamSupport.stream(DataModel.getInstance().getAllShops()).forEach(new Consumer<GenericShop>() {
-            @Override
-            public void accept(GenericShop genericShop) {
-
-                mapMarkers.put(
-                        map.addMarker(new MarkerOptions()
-                                        .position(new LatLng(genericShop.getLatitude(), genericShop.getLongitude()))
-                                        .draggable(false)
-                        ),
-                        genericShop.getId()
-                );
-
-
-            }
-        });
+//        Rest.getInstance().getService().getVodafoneShops().enqueue(new Callback<VodafoneResponse>() {
+//            @Override
+//            public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
+//
+//                VodafoneResponse resp = response.body();
+//                if (resp != null) {
+//
+//                    final List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
+//                    final List<VodafoneShop> outputShops = new ArrayList<VodafoneShop>();
+//                    StreamSupport.stream(shops)
+//                            .filter(new Predicate<VodafoneResponse.VodafoneShop>() {
+//                                @Override
+//                                public boolean test(VodafoneResponse.VodafoneShop vodafoneShop) {
+//                                    return vodafoneShop != null && vodafoneShop.getStoreProperties() != null;
+//                                }
+//                            })
+//                            .forEach(new Consumer<VodafoneResponse.VodafoneShop>() {
+//                                @Override
+//                                public void accept(VodafoneResponse.VodafoneShop vodafoneShop) {
+//                                    outputShops.add(
+//                                            new VodafoneShop(
+//                                                    vodafoneShop.getHash(),
+//                                                    vodafoneShop.getName(),
+//                                                    vodafoneShop.getDescription(),
+//                                                    vodafoneShop.getStoreProperties().getAddress(),
+//                                                    vodafoneShop.getStoreProperties().getHours(),
+//                                                    vodafoneShop.getStoreProperties().getLat(),
+//                                                    vodafoneShop.getStoreProperties().getLon()
+//                                            ));
+//                                }
+//                            });
+//                    DataModel.getInstance().setVodafoneShops(outputShops);
+//                    buildShopMarkers();
+//                } else {
+//                    //TODO: deal with it -.-'
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<VodafoneResponse> call, Throwable t) {
+//                Log.d(TAG, t.getMessage());
+//            }
+//        });
 
     }
+
 
     private void initNavDrawer() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -214,7 +191,7 @@ public class MainActivity extends AppCompatActivity
 
                 String shopId = mapMarkers.get(marker);
                 Toast.makeText(getApplicationContext(), shopId, Toast.LENGTH_SHORT).show();
-                showShopDetail(shopId);
+                //showShopDetail(shopId);
 
                 return false;
             }
@@ -309,12 +286,15 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
             Location loc = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            DataModel.getInstance().setLastKnownLocation(loc);
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
                     new LatLng(loc.getLatitude(),loc.getLongitude()),
                     10
             )));
+            shopFac.loadShops();
         }
     }
+
 
     /**
      * Google Play Services Callbacks
@@ -340,5 +320,32 @@ public class MainActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         initPlayServices().disconnect();
+    }
+
+
+    @Override
+    public void storesLoaded(List<? extends GenericShop> shops) {
+        if(mapMarkers == null)
+            mapMarkers = new HashMap<>();
+        StreamSupport.stream(shops)
+                .filter(new Predicate<GenericShop>() {
+                    @Override
+                    public boolean test(GenericShop genericShop) {
+                        //check if id doesnt already exist, no duplicates here...
+                        return !mapMarkers.containsValue(genericShop.getId());
+                    }
+                })
+                .forEach(new Consumer<GenericShop>() {
+                    @Override
+                    public void accept(GenericShop genericShop) {
+                        mapMarkers.put(
+                                map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(genericShop.getLatitude(), genericShop.getLongitude()))
+                                                .draggable(false)
+                                ),
+                                genericShop.getId()
+                        );
+                    }
+                });
     }
 }

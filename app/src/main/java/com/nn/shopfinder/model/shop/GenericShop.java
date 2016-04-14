@@ -1,9 +1,15 @@
 package com.nn.shopfinder.model.shop;
 
+import java.util.List;
+
 /**
  * Created by Nuno on 10/04/2016.
  */
 public class GenericShop {
+
+    private String id, name, description, address, hours;
+    private double latitude, longitude;
+    private List<String> services;
 
     public GenericShop(String id, String name, String description, String address, String hours, double latitude, double longitude) {
         this.id = id;
@@ -15,8 +21,16 @@ public class GenericShop {
         this.longitude = longitude;
     }
 
-    private String id, name, description, address, hours;
-    private double latitude, longitude;
+    public GenericShop(String id, String name, String description, String address, String hours, double latitude, double longitude, List<String> services) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.hours = hours;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.services = services;
+    }
 
     public String getId() {
         return id;

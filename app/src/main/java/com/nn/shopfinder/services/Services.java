@@ -28,7 +28,8 @@ public interface Services {
             @Query("latitude2") Double latitude2,
             @Query("longitude2") Double longitude2,
             @Query("pageNumber") Integer pageNumber,
-            @Query("recordsPerPage") Integer recordsPerPage
+            @Query("recordsPerPage") Integer recordsPerPage,
+            @Query("categoryId") Integer categoryId
     );
 
     //NOS

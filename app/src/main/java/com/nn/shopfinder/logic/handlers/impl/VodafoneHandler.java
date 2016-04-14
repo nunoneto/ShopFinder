@@ -1,8 +1,7 @@
 package com.nn.shopfinder.logic.handlers.impl;
 
-import android.util.Log;
-
-import com.nn.shopfinder.logic.handlers.ShopHandler;
+import com.nn.shopfinder.logic.OnShopsLoadedCallback;
+import com.nn.shopfinder.logic.handlers.AbstractShopHandler;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.VodafoneShop;
 import com.nn.shopfinder.services.Rest;
@@ -14,19 +13,14 @@ import java.util.List;
 import java8.util.function.Consumer;
 import java8.util.function.Predicate;
 import java8.util.stream.StreamSupport;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Nuno on 13/04/2016.
  */
-public class VodafoneHandler extends ShopHandler<VodafoneShop, VodafoneResponse> {
+public class VodafoneHandler extends AbstractShopHandler<VodafoneShop, VodafoneResponse> {
 
-    private static final String TAG = "SHOPHANDLER_VODAFONE";
-
-    public VodafoneHandler(boolean requiresLocation) {
-        super(requiresLocation);
+    public VodafoneHandler(boolean requiresLocation, OnShopsLoadedCallback onShopsLoadedCallback) {
+        super(requiresLocation, onShopsLoadedCallback);
     }
 
     @Override
@@ -62,26 +56,7 @@ public class VodafoneHandler extends ShopHandler<VodafoneShop, VodafoneResponse>
                     }
                 });
         DataModel.getInstance().setVodafoneShops(outputShops);
+        getOnShopsLoadedCallback().storesLoaded(outputShops);
         return outputShops;
     }
-
-
-    @Override
-    public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
-        VodafoneResponse resp = response.body();
-        if (resp != null) {
-            this.parseShops(resp);
-            this.setIsLoaded(true);
-        }else{
-            Log.d(TAG,"Could not load shops");
-            this.setIsLoaded(false);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<VodafoneResponse> call, Throwable t) {
-        Log.d(TAG,"Could not load shops");
-    }
-
-
 }

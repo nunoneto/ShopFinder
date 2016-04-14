@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface OnShopsLoadedCallback {
 
-    void storesLoaded(List<GenericShop> shops);
+    void storesLoaded(List<? extends GenericShop> shops);
 }
