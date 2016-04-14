@@ -16,7 +16,7 @@ import java8.util.function.Predicate;
 import java8.util.stream.StreamSupport;
 
 /**
- * Created by NB20301 on 14/04/2016.
+ * Created by Nuno on 14/04/2016.
  */
 public class NosHandler extends AbstractShopHandler<NosShop,NosResponse> {
 

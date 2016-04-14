@@ -17,7 +17,7 @@ import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
 
 /**
- * Created by NB20301 on 14/04/2016.
+ * Created by Nuno on 14/04/2016.
  */
 public class MeoHandler extends AbstractShopHandler<MeoShop, MeoResponse> {
 

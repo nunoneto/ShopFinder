@@ -3,7 +3,7 @@ package com.nn.shopfinder.model.shop;
 import java.util.List;
 
 /**
- * Created by NB20301 on 14/04/2016.
+ * Created by Nuno on 14/04/2016.
  */
 public class MeoShop extends GenericShop {
 

@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by NB20301 on 13/04/2016.
+ * Created by Nuno on 13/04/2016.
  */
 public class MeoResponse implements Serializable {
 
