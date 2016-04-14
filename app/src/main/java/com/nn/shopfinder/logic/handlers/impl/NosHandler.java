@@ -1,6 +1,6 @@
 package com.nn.shopfinder.logic.handlers.impl;
 
-import com.nn.shopfinder.logic.OnShopsLoadedCallback;
+import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.logic.handlers.AbstractShopHandler;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.NosShop;

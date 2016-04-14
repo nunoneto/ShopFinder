@@ -30,7 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
-import com.nn.shopfinder.logic.OnShopsLoadedCallback;
+import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.logic.ShopFactory;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.GenericShop;
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity
             Location loc = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             DataModel.getInstance().setLastKnownLocation(loc);
             map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
-                    new LatLng(loc.getLatitude(),loc.getLongitude()),
+                    new LatLng(loc.getLatitude(), loc.getLongitude()),
                     10
             )));
             shopFac.loadShops();

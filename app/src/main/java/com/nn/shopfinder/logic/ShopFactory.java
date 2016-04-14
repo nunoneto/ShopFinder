@@ -3,6 +3,7 @@ package com.nn.shopfinder.logic;
 import android.location.Location;
 
 import com.nn.shopfinder.logic.handlers.AbstractShopHandler;
+import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.logic.handlers.impl.MeoHandler;
 import com.nn.shopfinder.logic.handlers.impl.NosHandler;
 import com.nn.shopfinder.logic.handlers.impl.VodafoneHandler;

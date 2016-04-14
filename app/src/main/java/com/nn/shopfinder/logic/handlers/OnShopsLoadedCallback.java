@@ -1,4 +1,4 @@
-package com.nn.shopfinder.logic;
+package com.nn.shopfinder.logic.handlers;
 
 import com.nn.shopfinder.model.shop.GenericShop;
 

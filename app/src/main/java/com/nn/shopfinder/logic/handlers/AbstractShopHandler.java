@@ -2,7 +2,6 @@ package com.nn.shopfinder.logic.handlers;
 
 import android.util.Log;
 
-import com.nn.shopfinder.logic.OnShopsLoadedCallback;
 import com.nn.shopfinder.model.shop.GenericShop;
 
 import retrofit2.Call;
