@@ -1,5 +1,6 @@
 package com.nn.shopfinder.logic.handlers.impl;
 
+import com.nn.shopfinder.R;
 import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.logic.handlers.AbstractShopHandler;
 import com.nn.shopfinder.model.DataModel;
@@ -51,7 +52,8 @@ public class VodafoneHandler extends AbstractShopHandler<VodafoneShop, VodafoneR
                                         vodafoneShop.getStoreProperties().getAddress(),
                                         vodafoneShop.getStoreProperties().getHours(),
                                         vodafoneShop.getStoreProperties().getLat(),
-                                        vodafoneShop.getStoreProperties().getLon()
+                                        vodafoneShop.getStoreProperties().getLon(),
+                                        R.drawable.marker_vodafone
                                 ));
                     }
                 });

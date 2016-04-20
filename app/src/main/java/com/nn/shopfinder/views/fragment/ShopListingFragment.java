@@ -28,6 +28,11 @@ public class ShopListingFragment extends Fragment {
     private ShopListAdapter shopListAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    public static Fragment newInstance() {
+        return new ShopListingFragment();
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +41,8 @@ public class ShopListingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = View.inflate(getActivity(), R.layout.fragment_shoplist, container);
+
+        view = inflater.inflate(R.layout.fragment_shoplist,null);
 
         List<? extends GenericShop> shops = DataModel.getInstance().getAllShops();
 

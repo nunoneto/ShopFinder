@@ -7,6 +7,7 @@ import com.nn.shopfinder.model.shop.MeoShop;
 import com.nn.shopfinder.model.shop.NosShop;
 import com.nn.shopfinder.model.shop.VodafoneShop;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,16 +23,30 @@ public class DataModel {
 
     public DataModel(){
         instance = this;
+
+
     }
 
     private List<VodafoneShop> vodafoneShops;
     private List<NosShop> nosShops;
     private List<MeoShop> meoShops;
 
+    private List<?extends GenericShop>[] allShops = new List[]{meoShops,nosShops,vodafoneShops};
+
     private Location lastKnownLocation;
 
     public List<? extends GenericShop> getAllShops() {
-        return vodafoneShops;
+
+        List<GenericShop> allshops = new ArrayList<GenericShop>();
+
+        if(vodafoneShops != null)
+            allshops.addAll(vodafoneShops);
+        if(meoShops != null)
+            allshops.addAll(meoShops);
+        if(nosShops != null)
+            allshops.addAll(nosShops);
+
+        return allshops;
     }
 
     public List<VodafoneShop> getVodafoneShops() {

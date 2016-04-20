@@ -16,7 +16,7 @@ import retrofit2.http.Query;
  */
 public interface Services {
 
-    //Vodafone
+    //marker_vodafone
     @GET("https://selfcareonline.vodafone.pt/lojasvdf/api")
     Call<VodafoneResponse> getVodafoneShops();
 

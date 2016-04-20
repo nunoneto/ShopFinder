@@ -1,5 +1,6 @@
 package com.nn.shopfinder.logic.handlers.impl;
 
+import com.nn.shopfinder.R;
 import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.logic.handlers.AbstractShopHandler;
 import com.nn.shopfinder.model.DataModel;
@@ -52,7 +53,8 @@ public class NosHandler extends AbstractShopHandler<NosShop,NosResponse> {
                                         nosShop.getSchedule(),
                                         nosShop.getStoreLatitude(),
                                         nosShop.getStoreLongitude(),
-                                        nosShop.getAvailableServices()
+                                        nosShop.getAvailableServices(),
+                                        R.drawable.marker_nos
                                 ));
                     }
                 });

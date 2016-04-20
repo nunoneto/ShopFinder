@@ -30,12 +30,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nn.shopfinder.R;
-import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.logic.ShopFactory;
+import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.GenericShop;
 import com.nn.shopfinder.views.dialog.GenericDialog;
 import com.nn.shopfinder.views.fragment.ShopDetailFragment;
+import com.nn.shopfinder.views.fragment.ShopListingFragment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,54 +92,6 @@ public class MainActivity extends AppCompatActivity
 
         validateLocationStatus();
         validateInternetAccess();
-
-        shopFac.loadShops();
-
-//        Rest.getInstance().getService().getVodafoneShops().enqueue(new Callback<VodafoneResponse>() {
-//            @Override
-//            public void onResponse(Call<VodafoneResponse> call, Response<VodafoneResponse> response) {
-//
-//                VodafoneResponse resp = response.body();
-//                if (resp != null) {
-//
-//                    final List<VodafoneResponse.VodafoneShop> shops = new ArrayList<VodafoneResponse.VodafoneShop>(resp.getShops().values());
-//                    final List<VodafoneShop> outputShops = new ArrayList<VodafoneShop>();
-//                    StreamSupport.stream(shops)
-//                            .filter(new Predicate<VodafoneResponse.VodafoneShop>() {
-//                                @Override
-//                                public boolean test(VodafoneResponse.VodafoneShop vodafoneShop) {
-//                                    return vodafoneShop != null && vodafoneShop.getStoreProperties() != null;
-//                                }
-//                            })
-//                            .forEach(new Consumer<VodafoneResponse.VodafoneShop>() {
-//                                @Override
-//                                public void accept(VodafoneResponse.VodafoneShop vodafoneShop) {
-//                                    outputShops.add(
-//                                            new VodafoneShop(
-//                                                    vodafoneShop.getHash(),
-//                                                    vodafoneShop.getName(),
-//                                                    vodafoneShop.getDescription(),
-//                                                    vodafoneShop.getStoreProperties().getAddress(),
-//                                                    vodafoneShop.getStoreProperties().getHours(),
-//                                                    vodafoneShop.getStoreProperties().getLat(),
-//                                                    vodafoneShop.getStoreProperties().getLon()
-//                                            ));
-//                                }
-//                            });
-//                    DataModel.getInstance().setVodafoneShops(outputShops);
-//                    buildShopMarkers();
-//                } else {
-//                    //TODO: deal with it -.-'
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<VodafoneResponse> call, Throwable t) {
-//                Log.d(TAG, t.getMessage());
-//            }
-//        });
-
     }
 
 
@@ -192,7 +145,7 @@ public class MainActivity extends AppCompatActivity
                 String shopId = mapMarkers.get(marker);
                 Toast.makeText(getApplicationContext(), shopId, Toast.LENGTH_SHORT).show();
                 //showShopDetail(shopId);
-
+                showShopListing();
                 return false;
             }
         });
@@ -207,8 +160,23 @@ public class MainActivity extends AppCompatActivity
         getFragmentManager()
                 .beginTransaction()
                 .add(
-                    R.id.fragment_container,
-                    ShopDetailFragment.newInstance(shopId)
+                        R.id.fragment_container,
+                        ShopDetailFragment.newInstance(shopId)
+                ).commit();
+
+    }
+
+    private void showShopListing(){
+
+        getFragmentManager().findFragmentById(R.id.mapFragment)
+                .getView()
+                .setVisibility(View.GONE);
+
+        getFragmentManager()
+                .beginTransaction()
+                .add(
+                        R.id.fragment_container,
+                        ShopListingFragment.newInstance()
                 ).commit();
 
     }
@@ -324,7 +292,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    public void storesLoaded(List<? extends GenericShop> shops) {
+    public void storesLoaded(final List<? extends GenericShop> shops) {
         if(mapMarkers == null)
             mapMarkers = new HashMap<>();
         StreamSupport.stream(shops)
@@ -342,6 +310,7 @@ public class MainActivity extends AppCompatActivity
                                 map.addMarker(new MarkerOptions()
                                                 .position(new LatLng(genericShop.getLatitude(), genericShop.getLongitude()))
                                                 .draggable(false)
+//                                                .icon(BitmapDescriptorFactory.fromResource(genericShop.getIconResourceId()))
                                 ),
                                 genericShop.getId()
                         );

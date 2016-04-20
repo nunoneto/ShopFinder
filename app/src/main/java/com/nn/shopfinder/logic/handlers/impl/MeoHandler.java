@@ -1,7 +1,8 @@
 package com.nn.shopfinder.logic.handlers.impl;
 
-import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
+import com.nn.shopfinder.R;
 import com.nn.shopfinder.logic.handlers.AbstractShopHandler;
+import com.nn.shopfinder.logic.handlers.OnShopsLoadedCallback;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.MeoShop;
 import com.nn.shopfinder.services.Rest;
@@ -70,7 +71,8 @@ public class MeoHandler extends AbstractShopHandler<MeoShop, MeoResponse> {
                                                 "",
                                                 meoShop.getLatitude(),
                                                 meoShop.getLongitude(),
-                                                services
+                                                services,
+                                                R.drawable.marker_meo
                                         ));
                             } else {
                                 outputShops.add(
@@ -81,7 +83,8 @@ public class MeoHandler extends AbstractShopHandler<MeoShop, MeoResponse> {
                                                 meoShop.getAddress(),
                                                 "",
                                                 meoShop.getLatitude(),
-                                                meoShop.getLongitude()
+                                                meoShop.getLongitude(),
+                                                R.drawable.marker_meo
                                         ));
                             }
 
