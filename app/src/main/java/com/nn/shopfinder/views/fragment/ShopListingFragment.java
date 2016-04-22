@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.nn.shopfinder.R;
 import com.nn.shopfinder.model.DataModel;
 import com.nn.shopfinder.model.shop.GenericShop;
+import com.nn.shopfinder.views.activity.MainActivity;
 import com.nn.shopfinder.views.adapter.ShopListAdapter;
 
 import java.util.List;
@@ -44,14 +45,21 @@ public class ShopListingFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_shoplist,null);
 
-        List<? extends GenericShop> shops = DataModel.getInstance().getAllShops();
+        final List<? extends GenericShop> shops = DataModel.getInstance().getAllShops();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.shopList);
         mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
 
-        shopListAdapter = new ShopListAdapter(shops);
+        shopListAdapter = new ShopListAdapter(shops, this, new ShopListAdapter.OnItemClickedListener() {
+            @Override
+            public void onItemClicked(View v) {
+                int pos = recyclerView.getChildAdapterPosition(v);
+                ((MainActivity)getActivity()).showShopDetail(shops.get(pos).getId());
+            }
+        });
         recyclerView.setAdapter(shopListAdapter);
+
 
         return view;
     }

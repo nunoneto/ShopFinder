@@ -1,8 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="10"
+    android:background="@color/white">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:background="@color/colorPrimary"
+        android:elevation="10dp">
+
+        <TextView
+            android:id="@+id/shopNameTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loja Vodafone Boavista"
+            android:textSize="35sp"
+            android:layout_marginTop="20dp"
+            />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_location_on_white_24dp"
+            android:adjustViewBounds="true"/>
+
+        <TextView
+            android:id="@+id/shopAddressTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="morada morada morada morada morada morada "
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        ></LinearLayout>
 
 
 

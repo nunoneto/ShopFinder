@@ -1,5 +1,7 @@
 package com.nn.shopfinder.views.adapter;
 
+import android.app.Fragment;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.nn.shopfinder.R;
 import com.nn.shopfinder.model.shop.GenericShop;
 
@@ -18,9 +21,15 @@ import java.util.List;
 public class ShopListAdapter extends RecyclerView.Adapter<ShopListAdapter.ViewHolder> {
 
     private List<? extends GenericShop> shops;
+    private Fragment parent;
+    private Context context;
+    private OnItemClickedListener listener;
 
-    public ShopListAdapter(List<? extends GenericShop> shops) {
+    public ShopListAdapter(List<? extends GenericShop> shops, Fragment frag, OnItemClickedListener listener) {
         this.shops = shops;
+        this.parent = frag;
+        this.context = frag.getActivity().getApplicationContext();
+        this.listener = listener;
     }
 
     @Override
@@ -28,6 +37,14 @@ public class ShopListAdapter extends RecyclerView.Adapter<ShopListAdapter.ViewHo
 
         LayoutInflater inf = LayoutInflater.from(parent.getContext());
         View v = inf.inflate(R.layout.shoplist_item, parent, false);
+
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClicked(v);
+            }
+        });
+
 
         return new ViewHolder(
                 v,
@@ -46,8 +63,7 @@ public class ShopListAdapter extends RecyclerView.Adapter<ShopListAdapter.ViewHo
         holder.localTxt.setText(shop.getAddress());
 
         //TODO add image cache and circular mask
-
-        holder.brandIcon.setImageResource(shop.getIconResourceId());
+        Glide.with(parent).load(shop.getIconResourceId()).transform(new CircleTransform(context)).into(holder.brandIcon);
 
     }
 
@@ -67,5 +83,11 @@ public class ShopListAdapter extends RecyclerView.Adapter<ShopListAdapter.ViewHo
             this.localTxt = localTxt;
             this.brandIcon = brandIcon;
         }
+    }
+
+    public interface OnItemClickedListener{
+
+        void onItemClicked(View v);
+
     }
 }

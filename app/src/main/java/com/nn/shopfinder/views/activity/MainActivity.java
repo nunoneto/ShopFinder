@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void showShopDetail(String shopId){
+    public void showShopDetail(String shopId){
 
         getFragmentManager().findFragmentById(R.id.mapFragment)
                 .getView()
@@ -162,8 +162,9 @@ public class MainActivity extends AppCompatActivity
                 .add(
                         R.id.fragment_container,
                         ShopDetailFragment.newInstance(shopId)
-                ).commit();
-
+                )
+                .addToBackStack("shop_detail")
+                .commit();
     }
 
     private void showShopListing(){
@@ -177,8 +178,9 @@ public class MainActivity extends AppCompatActivity
                 .add(
                         R.id.fragment_container,
                         ShopListingFragment.newInstance()
-                ).commit();
-
+                )
+                .addToBackStack("shop_list")
+                .commit();
     }
 
     private boolean validateLocationStatus(){

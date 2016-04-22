@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:elevation="6dp"
-    android:layout_margin="10dp">
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/shop_list_bottom_border">
 
     <ImageView
         android:id="@+id/shopIcon"
@@ -12,23 +13,34 @@
         android:layout_margin="10dp"
         android:layout_height="60dp"
         android:adjustViewBounds="true"/>
+
     <TextView
         android:id="@+id/shopName"
-        android:text="Loja"
-        android:layout_width="wrap_content"
+        android:text="Loja "
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/shopIcon"
         android:layout_marginTop="18dp"
-        android:textSize="22sp"/>
+        android:textSize="22sp"
+        android:textColor="@color/primaryText"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_marginRight="10dp"
+        />
 
     <TextView
         android:id="@+id/shopLocation"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="localização"
         android:layout_toRightOf="@+id/shopIcon"
         android:layout_below="@+id/shopName"
         android:layout_marginTop="5dp"
-        android:textSize="12sp"/>
+        android:textSize="12sp"
+        android:textColor="@color/primaryText"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_marginRight="20dp"
+        />
 
 </RelativeLayout>
